@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> Age Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #8EC5FC, #E0C3FC);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      transition: background 0.4s;
+    }
+
+    .dark-mode {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #fff;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+      transition: background-color 0.4s, color 0.4s;
+    }
+
+    .dark-mode .container {
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .live-time {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .dark-mode .live-time {
+      color: #bbb;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .toggle {
+      margin-top: 10px;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .dark-mode .toggle {
+      color: #fff;
+    }
+
+    .result {
+      margin-top: 20px;
+      text-align: left;
+      font-size: 15px;
+    }
+
+    .result p {
+      margin: 8px 0;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🎉 Age Calculator</h1>
+    <div class="live-time" id="clock"></div>
+
+    <input type="text" id="username" placeholder="Enter your name">
+    <input type="date" id="dob">
+    <button onclick="calculateAge()">Calculate Age</button>
+
+    <div class="result" id="result"></div>
+    <div class="toggle" onclick="toggleDarkMode()">🌓 Toggle Dark Mode</div>
+  </div>
+
+  <script>
+    // Live clock display
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("clock").innerText =
+        "Current time: " + now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Toggle dark mode
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    // Age calculation
+    function calculateAge() {
+      const name = document.getElementById("username").value.trim();
+      const dobInput = document.getElementById("dob").value;
+      const result = document.getElementById("result");
+
+      if (!dobInput) {
+        result.innerHTML = "<p>Please select your date of birth.</p>";
+        return;
+      }
+
+      const dob = new Date(dobInput);
+      const today = new Date();
+
+      if (dob > today) {
+        result.innerHTML = "<p>Birth date cannot be in the future.</p>";
+        return;
+      }
+
+      let years = today.getFullYear() - dob.getFullYear();
+      let months = today.getMonth() - dob.getMonth();
+      let days = today.getDate() - dob.getDate();
+
+      if (days < 0) {
+        months--;
+        const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        days += prevMonth.getDate();
+      }
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      const ageInMs = today - dob;
+      const ageInSeconds = Math.floor(ageInMs / 1000);
+      const ageInMinutes = Math.floor(ageInSeconds / 60);
+      const ageInHours = Math.floor(ageInMinutes / 60);
+      const ageInDays = Math.floor(ageInMs / (1000 * 60 * 60 * 24));
+      const ageInWeeks = Math.floor(ageInDays / 7);
+      const ageInMonths = years * 12 + months;
+
+      const nextBirthday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+      if (nextBirthday < today) {
+        nextBirthday.setFullYear(today.getFullYear() + 1);
+      }
+      const daysUntilBirthday = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+
+      result.innerHTML = `
+        <p><strong>Hello ${name || "friend"}!</strong></p>
+        <p>🎈 You are <strong>${years} years, ${months} months, ${days} days</strong> old.</p>
+        <p>📅 Age in Days: <strong>${ageInDays}</strong></p>
+        <p>🕐 Age in Hours: <strong>${ageInHours}</strong></p>
+        <p>🕑 Age in Minutes: <strong>${ageInMinutes}</strong></p>
+        <p>⏱️ Age in Seconds: <strong>${ageInSeconds}</strong></p>
+        <p>📆 Age in Weeks: <strong>${ageInWeeks}</strong></p>
+        <p>🗓️ Age in Months: <strong>${ageInMonths}</strong></p>
+        <p>🎁 Your next birthday is in <strong>${daysUntilBirthday}</strong> day(s)!</p>
+      `;
+    }
+  </script>
+
+</body>
+</html>
+
+
